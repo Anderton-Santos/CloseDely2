@@ -1,0 +1,39 @@
+.section{
+    width: 100vw;
+    height: 60px;
+}
+
+.divMain{
+    border-bottom: 1px solid #000;
+    background-color: aqua;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.table{
+    width: 100%;
+    display: flex;
+
+
+}
+.tableCliente{
+    width: 21%;
+    margin-left: 150px;
+}
+.tableValor{
+    width: 200px;
+}
+.tableformPag{
+    width: 30%;
+
+}
+.tableEntregador{
+    width: 200px;
+
+}
+.tableApp{
+    width: 200px;
+
+}

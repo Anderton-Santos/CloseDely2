@@ -1,0 +1,61 @@
+
+.contain{
+    background-color: white;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    
+}
+
+
+.main{
+    width: 100%;
+    height: 84.5vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+}
+
+.boxButton{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border: 0.5px solid #d6d5f5;
+    border-radius: 10%;
+    width: 25%;
+    height: 60%;
+    color: #554deb;
+    transition: 0.6s;
+    transform: scale(1.1, 1.1);
+}
+
+.boxButton:not(:hover){
+    background-color: #d6d5f5;
+    border: none;
+    font-weight: bold;
+    filter: blur(4px);
+    transform: scale(0.9, 0.9);
+}
+
+
+.wpp,
+.dely,
+.all{
+    font-size: 170px;
+}
+
+.textIcon{
+    display: flex;
+    padding: 30px;
+    font-size: 20px;
+    color: #363636;
+}
+
+footer{
+    padding: 20px;
+    text-align: right;
+    font-weight: bold;
+}
