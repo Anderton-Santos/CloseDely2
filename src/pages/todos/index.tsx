@@ -1,133 +1,143 @@
-import styles from './todos.module.css'
-import { BarNvigation } from '../../components/barnavigation';
-
-import { useState, useEffect } from "react";
-
-import {
-    collection,
-    query,
-    getDocs,
-    orderBy
-} from 'firebase/firestore'
-import {db} from '../../components/services/firebaseConnection'
 
 
+import { IoIosRemoveCircle } from "react-icons/io";
+import styles from "./todos.module.css";
+import { BarNvigation } from "../../components/barnavigation";
 
-export interface DelyProps{
+import { collection, query, getDocs, orderBy, deleteDoc, doc } from "firebase/firestore";
+import { db } from "../../components/services/firebaseConnection";
+
+import { useState, useEffect, useRef } from "react";
+import { useReactToPrint } from 'react-to-print';
+
+export interface TodosProps {
     cliente: string;
-    valor: string | number;
+    valor: number;
     formPag: string;
     entregador: string;
     app: string;
+    soma?: number;
+    id: string
+}
+
+function filteredTodos(todos: TodosProps[], paymentMethod?: string) {
+    if (!paymentMethod) {
+        // Se o filtro for undefined, retorna o estado original, ou seja, a lista inicial.
+        return todos;
+    }
+        const filt =  todos.filter((todo) => todo.formPag === paymentMethod);
+        console.log(filt)
+        
+
+        return filt
+
 }
 
 
-export function Todos(){
-    const [dely, setDely] = useState<DelyProps[]>([])
 
+export function Todos() {
+    const [todos, setTodos] = useState<TodosProps[]>([]); // Lista inicial, nunca é modificada por filtros
+    const [currentFilter, setCurrentFilter] = useState<string>(); // Filtro selecionado atualmente, ex: 'Din', 'Cart', etc
+    const filters = [...new Set(todos.map((filt) => filt.formPag))]; // Filtros possíveis, ex: ['Din', 'Cart', 'Pix Maq']
 
-    const [filted, setFilted] = useState('')
-
-
-    const filterItems = [...new Set(dely.map((filt) => filt.formPag))]
-
-    // const updateItems = (formP) => {
-
+    const [total, setTotal] = useState('') // Soma dos valores
 
     
-    //     const newItems = dely.filter((newVal) => newVal.formPag === formP)
-    //     //setDely(dely)
-    //     //alert('trocou')
-
-    //     setDely(newItems)
-        
-
-    // }
-
-    // function Alltask(){
-    //     const all = [...dely]
-    //     setDely(all)
-    //      console.log(all)
-
-    // }
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+      content: () => componentRef.current,
+    });
 
 
+    useEffect(() => {
+        function loadTodos() {
+            const todosRef = collection(db, "pedidos");
+            const queryRef = query(todosRef, orderBy("created", "asc"));
 
+            getDocs(queryRef).then((snapshot) => {
+                const listTodos = [] as TodosProps[];
 
-
-    
-
-
-
-
-
-
-
-
-    useEffect(()=>{
-        function loadDely(){
-            const delyRef = collection(db, "pedidos")
-            const queryRef = query(delyRef, orderBy("created", "asc"))
-
-            getDocs(queryRef)
-            .then((snapshot)=>{
-                let listDely = [] as DelyProps[];
-
-                snapshot.forEach(doc =>{
-                    listDely.push({
+                snapshot.forEach((doc) => {
+                    listTodos.push({
+                        id: doc.id,
                         cliente: doc.data().cliente,
                         valor: doc.data().valor,
                         formPag: doc.data().formPag,
                         entregador: doc.data().entregador,
-                        app: doc.data().app
-                    })
-                })
+                        app: doc.data().app,
+                    });
+                });
 
-                // console.log(listDely)
-
-                setDely(listDely)
-                
-
-            })
+                setTodos(listTodos);
+                TotalResultDely(listTodos)
+            });
         }
 
-        loadDely();
-    },[])
+        loadTodos();
+    }, []);
 
-    return(
+
+    function TotalResultDely(items: TodosProps[]){
+         let myTotal = items;
+        let totalResult = myTotal.reduce((acc, obj) => {return Number(acc) + Number(obj.valor)}, 0)
+        const totalResulFormated = totalResult.toLocaleString("pt-BR", {style: 'currency', currency: "BRL"})
+        setTotal(totalResulFormated)
+        return
         
+    }
 
+    async function RemoveItem(id: string){
+        const docRef = doc(db, "pedidos", id)
+        await deleteDoc(docRef)
+
+    }
+    
+
+    return (
         <section className={styles.section}>
             <BarNvigation
-                filterItems = {filterItems}
-                // updateItems = {updateItems}
-                setDely={dely}
-                //  Alltask = {Alltask}
-                
-                
-                
-
-
+                filters={filters}
+                onFilterClick={(filter:any) => {
+                    // Seta o filtro atual selecionado. Quando o filtro for "ALL", o retorno é undefined, zerando o filtro.
+                    setCurrentFilter(filter);
+            
+                }}
             />
 
-            <div className={styles.table}>
-                    <p className={styles.tableCliente}>CLIENTE</p>
-                    <p className={styles.tableValor}>VALOR</p>
-                    <p className={styles.tableformPag}>FORMA PAGAMENTO</p>
-                    <p className={styles.tableEntregador}>ENTREGADOR</p>
-                    <p className={styles.tableApp}>APP</p>
+            <table className={styles.table} ref={componentRef}>
+                <thead>
+                    <tr>
+                        <th scope="col" className={styles.tableCliente}>CLIENTE</th>
+                        <th scope="col" className={styles.tableValor}>VALOR</th>
+                        <th scope="col" className={styles.tableformPag}>FORMA PAGAMENTO</th>
+                        <th scope="col" className={styles.tableEntregador}>ENTREGADOR</th>
+                        <th scope="col" className={styles.tableApp}>APP</th>
+                    </tr>
+                </thead>
+
+
+                {/* Sempre que "todos" ou "currentFilter" forem atualizados, a função filteredTodos() irá renderizar novamente, aplicando o filtro necessário. */}
+                {filteredTodos(todos, currentFilter).map((ped) => (
+                    <tbody id="tbody">
+                        <tr className={styles.divMain}>
+                            <td className={styles.tdLabel}>{ped.cliente}</td>
+                            <td className={styles.tdLabel}>{ped.valor}</td>
+                            <td className={styles.tdLabel}>{ped.formPag}</td>
+                            <td className={styles.tdLabel}>{ped.entregador}</td>
+                            <td className={styles.tdLabel}>{ped.app}</td>
+
+                            <button className={styles.removeItem} onClick={()=>RemoveItem(ped.id)}><IoIosRemoveCircle /></button>
+
+                        </tr>
+
+                    </tbody>
                     
-            </div>
-            {dely.map(ped =>(
-                <div className={styles.divMain}>
-                    <p className={styles.cliente}>{ped.cliente}</p>
-                    <p className={styles.valor}>{ped.valor}</p>
-                    <p className={styles.formPag}>{ped.formPag}</p>
-                    <p className={styles.entregador}>{ped.entregador}</p>
-                    <p className={styles.app}>{ped.app}</p>
-                    
-                </div>
-            ))}
+                ))}
+                <p className={styles.total}><span>Total :</span> {total}</p>
+            </table>
+
+
+            <button className={styles.print} onClick={handlePrint}>Baixar em Pdf</button>
         </section>
-    )
+    );
 }

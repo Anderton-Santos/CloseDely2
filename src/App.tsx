@@ -8,6 +8,8 @@ import { App } from "./pages/app"
 import { Register } from "./pages/register"
 import { Todos} from './pages/todos'
 
+import { Private } from "./routes/private"
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -16,20 +18,20 @@ const router = createBrowserRouter([
 
   {
     path: '/home',
-    element: <Home/>
+    element: <Private><Home/></Private>
   },
 
   {
     path: '/input',
-    element: <Input/>
+    element: <Private><Input/></Private>
   },
   {
     path: '/wpp',
-    element: <Whatsapp/>
+    element: <Private><Whatsapp/></Private>
   },
   {
     path: '/app',
-    element: <App/>
+    element: <Private><App/></Private>
   },
   {
     path: '/register',
@@ -37,7 +39,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/todos',
-    element: <Todos/>
+    element: <Private><Todos/></Private>
   }
 ])
 

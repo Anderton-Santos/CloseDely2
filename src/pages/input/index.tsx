@@ -39,11 +39,11 @@ export function Input() {
     //const appFilter = listApp.findIndex(i => i.id === 2 && i.name === "WPP")
 
 
-    
-    function onSubmit(data: FormData) {
- 
 
-                addDoc(collection(db, "pedidos"), {
+    function onSubmit(data: FormData) {
+
+
+        addDoc(collection(db, "pedidos"), {
             cliente: data.cliente,
             valor: data.valor,
             formPag: data.formPag,
@@ -62,7 +62,7 @@ export function Input() {
                 console.log("erro ao cadastra")
 
 
-            })    
+            })
 
 
 
@@ -97,7 +97,7 @@ export function Input() {
                     <div>
                         <label className={styles.label}>VALOR:</label>
                         <Form
-                            type='text'
+                            type='any'
                             register={register}
                             name="valor"
                             error={errors.valor?.message}
@@ -107,13 +107,22 @@ export function Input() {
 
                     <div>
                         <label className={styles.label}>FORMA DE PAGAMENTO:</label>
-                        <Form
+
+                        <select {...register("formPag")}>
+                            <option value="Din">Din</option>
+                            <option value="Cart">Cart</option>
+                            <option value="Pix">Pix</option>
+                            <option value="Pix Cnpj">Pix Cnpj</option>
+
+                        </select>
+
+                        {/* <Form
                             type='text'
                             register={register}
                             name="formPag"
                             error={errors.formPag?.message}
                             placeholder='Ex. Din, Pix, Cart'
-                        />
+                        /> */}
                     </div>
 
                     <div>
@@ -129,13 +138,22 @@ export function Input() {
 
                     <div>
                         <label className={styles.label}>PLATAFORMA:</label>
-                        <Form
-                            type='text'
+                        
+                        {/* <Form
+                            type='select'
                             register={register}
                             name="app"
                             error={errors.entregador?.message}
                             placeholder='QD'
-                        />
+                        /> */}
+                        
+
+                        <select {...register("app")}>
+                            <option value="WPP">WPP</option>
+                            <option value="QD">QD</option>
+
+                        </select>
+
                     </div>
 
 

@@ -1,91 +1,153 @@
-//import {Form} from '../../components/form'
-
-import styles from './app.module.css'
 
 
-import { useState, useEffect } from "react";
+import { IoIosRemoveCircle } from "react-icons/io";
+import styles from "./app.module.css";
+import { BarNvigation } from "../../components/barnavigation";
 
-import {
-    collection,
-    query,
-    getDocs,
-    //orderBy,
-    where
-} from 'firebase/firestore'
-import {db} from '../../components/services/firebaseConnection'
+import { collection, query, getDocs, where, deleteDoc, doc } from "firebase/firestore";
+import { db } from "../../components/services/firebaseConnection";
 
+import { useState, useEffect, useRef } from "react";
+import { useReactToPrint } from 'react-to-print';
 
-
-export interface DelyProps{
+export interface TodosProps {
     cliente: string;
-    valor: string | number;
+    valor: number;
     formPag: string;
     entregador: string;
     app: string;
+    soma?: number;
+    id: string
+}
+
+function filteredTodos(todos: TodosProps[], paymentMethod?: string) {
+    if (!paymentMethod) {
+        // Se o filtro for undefined, retorna o estado original, ou seja, a lista inicial.
+        
+        
+        console.log('zerou')
+        return todos;
+    }else{
+        const filt =  todos.filter((todo) => todo.formPag === paymentMethod);
+        console.log("atualizou")
+        return filt
+
+       
+    }
+
 }
 
 
 
+export function App() {
+    const [todos, setTodos] = useState<TodosProps[]>([]); // Lista inicial, nunca é modificada por filtros
+    const [currentFilter, setCurrentFilter] = useState<string>(); // Filtro selecionado atualmente, ex: 'Din', 'Cart', etc
+    const filters = [...new Set(todos.map((filt) => filt.formPag))]; // Filtros possíveis, ex: ['Din', 'Cart', 'Pix Maq']
 
-export function App(){
-    const [dely, setDely] = useState<DelyProps[]>([]) 
-    
+    const [total, setTotal] = useState('') // Soma dos valores
 
-        useEffect(()=>{
-            function loadDely(){
-                const delyRef = collection(db, "pedidos")
-                const queryRef = query(delyRef, where("app", "==", "QD"))
     
-                getDocs(queryRef)
-                .then((snapshot)=>{
-                    let listDely = [] as DelyProps[];
-    
-                    snapshot.forEach(doc =>{
-                        listDely.push({
-                            cliente: doc.data().cliente,
-                            valor: doc.data().valor,
-                            formPag: doc.data().formPag,
-                            entregador: doc.data().entregador,
-                            app: doc.data().app
-                        })
-                    })
-    
-                    setDely(listDely)
-                    
-    
-    
-                })
-            }
-    
-            loadDely();
-        },[])
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+      content: () => componentRef.current,
+    });
 
 
+    useEffect(() => {
+        function loadTodos() {
+            const todosRef = collection(db, "pedidos");
+            const queryRef = query(todosRef, where("app", "==", "QD"))
+
+            getDocs(queryRef).then((snapshot) => {
+                const listTodos = [] as TodosProps[];
+
+                snapshot.forEach((doc) => {
+                    listTodos.push({
+                        id: doc.id,
+                        cliente: doc.data().cliente,
+                        valor: doc.data().valor,
+                        formPag: doc.data().formPag,
+                        entregador: doc.data().entregador,
+                        app: doc.data().app,
+                    });
+                });
+
+                setTodos(listTodos);
+                TotalResultDely(listTodos)
+            });
+        }
+
+        loadTodos();
+    }, []);
 
 
-    return(
+    function TotalResultDely(items: TodosProps[]){
+         let myTotal = items;
+        let totalResult = myTotal.reduce((acc, obj) => {return Number(acc) + Number(obj.valor)}, 0)
+        const totalResulFormated = totalResult.toLocaleString("pt-BR", {style: 'currency', currency: "BRL"})
+        setTotal(totalResulFormated)
+        return
         
+    }
 
-        <section className={styles.section} >
+    async function RemoveItem(id: string){
+        const docRef = doc(db, "pedidos", id)
+        await deleteDoc(docRef)
 
+    }
+    
 
-            <div className={styles.table}>
-                    <p className={styles.tableCliente}>CLIENTE</p>
-                    <p className={styles.tableValor}>VALOR</p>
-                    <p className={styles.tableformPag}>FORMA PAGAMENTO</p>
-                    <p className={styles.tableEntregador}>ENTREGADOR</p>
-                    <p className={styles.tableApp}>APP</p>
-            </div>
-            {dely.map(ped =>(
-                <div className={styles.divMain}>
-                    <p className={styles.cliente}>{ped.cliente}</p>
-                    <p className={styles.valor}>{ped.valor}</p>
-                    <p className={styles.formPag}>{ped.formPag}</p>
-                    <p className={styles.entregador}>{ped.entregador}</p>
-                    <p className={styles.app}>{ped.app}</p>
+    return (
+        <section className={styles.section}>
+            <BarNvigation
+                filters={filters}
+                onFilterClick={(filter:any) => {
+                    // Seta o filtro atual selecionado. Quando o filtro for "ALL", o retorno é undefined, zerando o filtro.
+                    setCurrentFilter(filter);
+                    // TotalResultDely(filter)
                     
-                </div>
-            ))}
+                    
+                    
+                   
+                    
+                    
+                }}
+            />
+
+            <table className={styles.table} ref={componentRef}>
+                <thead>
+                    <tr>
+                        <th scope="col" className={styles.tableCliente}>CLIENTE</th>
+                        <th scope="col" className={styles.tableValor}>VALOR</th>
+                        <th scope="col" className={styles.tableformPag}>FORMA PAGAMENTO</th>
+                        <th scope="col" className={styles.tableEntregador}>ENTREGADOR</th>
+                        <th scope="col" className={styles.tableApp}>APP</th>
+                    </tr>
+                </thead>
+
+
+                {/* Sempre que "todos" ou "currentFilter" forem atualizados, a função filteredTodos() irá renderizar novamente, aplicando o filtro necessário. */}
+                {filteredTodos(todos, currentFilter).map((ped) => (
+                    <tbody id="tbody">
+                        <tr className={styles.divMain}>
+                            <td className={styles.tdLabel}>{ped.cliente}</td>
+                            <td className={styles.tdLabel}>{ped.valor}</td>
+                            <td className={styles.tdLabel}>{ped.formPag}</td>
+                            <td className={styles.tdLabel}>{ped.entregador}</td>
+                            <td className={styles.tdLabel}>{ped.app}</td>
+
+                            <td className={styles.removeItem} onClick={()=>RemoveItem(ped.id)}><IoIosRemoveCircle /></td>
+
+                        </tr>
+
+                    </tbody>
+                    
+                ))}
+                <p className={styles.total}><span>Total :</span> {total}</p>
+            </table>
+
+
+            <button onClick={handlePrint}>Print</button>
         </section>
-    )
+    );
 }

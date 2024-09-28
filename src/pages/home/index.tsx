@@ -11,10 +11,10 @@ import styles from './home.module.css'
 export function Home() {
     return (
         <div className={styles.contain}>
-            <div className={styles.header}>
+            {/* <div className={styles.header}>
                 <h1>Bem vinda XXXXXX XXXXX,</h1>
                 <h3>Preparada para mais um dia?=)</h3>
-            </div>
+            </div> */}
 
 
             <section className={styles.main}>

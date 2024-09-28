@@ -8,6 +8,8 @@ import {zodResolver} from '@hookform/resolvers/zod'
 import {signInWithEmailAndPassword, signOut} from 'firebase/auth'
 import {auth} from '../../components/services/firebaseConnection'
 
+import styles from './login.module.css'
+
 const schema = z.object({
     email: z.string().email("Insira um email válido").min(1, "O campo email é obrigatório"),
     password: z.string().min(1, "O campo senha é obrigatório")
@@ -52,14 +54,16 @@ export function Login(){
             <Link to='/'>
                 <h1 className='mt-11 text-vlck mb-7 font-bold text-5xl'>Close
                 <span className='bg-gradient-to-r from-yellow-500 to-orange-400 bg-clip-text text-transparent'>Dely</span>
-                </h1>
+                </h1 >
+                
+
 
             </Link>
                 
                 <form onSubmit={handleSubmit(onSubmit)} className='w-full max-w-xl flex flex-col px-2'>
-                    <div>
+                    <div className={styles.div}>
                         <Form
-                        placeholder='Digite seu usuário'
+                        placeholder='Digite seu email'
                         type='email'
                         name='email'
                         error={errors.email?.message}
@@ -69,7 +73,7 @@ export function Login(){
 
                     <div>
                         <Form
-                        placeholder='Digite seu usuário'
+                        placeholder='Digite seu senha'
                         type='password'
                         name='password'
                         error={errors.password?.message}
@@ -90,8 +94,8 @@ export function Login(){
                 </form>
 
                 
-                <Link to="/register">
-                    Ainda não possui um cadastro? Fazer Cadastro!
+                <Link to="/register" className={styles.pfazerCadastro}>
+                    Ainda não possui um cadastro? <span>Fazer Cadastro!</span>
                 </Link>
             
             

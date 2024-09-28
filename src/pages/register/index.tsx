@@ -9,6 +9,8 @@ import {zodResolver} from '@hookform/resolvers/zod'
 import {auth} from '../../components/services/firebaseConnection'
 import {createUserWithEmailAndPassword, updateProfile, signOut} from 'firebase/auth'
 
+import styles from "./register.module.css";
+
 const schema = z.object({
     name: z.string().min(1, "O nome é obrigatório"),
     email: z.string().email("Insira um email válido").min(1, "O campo email é obrigatório"),
@@ -62,7 +64,7 @@ export function Register(){
                 
                 <form onSubmit={handleSubmit(onSubmit)} className='w-full max-w-xl flex flex-col px-2'>
 
-                <div>
+                <div className={styles.div}>
                         <Form
                         placeholder='Digite seu usuário'
                         type='text'
@@ -72,9 +74,9 @@ export function Register(){
                         />
                     </div>
 
-                    <div>
+                    <div className={styles.div}>
                         <Form
-                        placeholder='Digite seu usuário'
+                        placeholder='Digite seu email'
                         type='email'
                         name='email'
                         error={errors.email?.message}
@@ -82,9 +84,9 @@ export function Register(){
                         />
                     </div>
 
-                    <div>
+                    <div className={styles.div}>
                         <Form
-                        placeholder='Digite seu usuário'
+                        placeholder='Digite seu senha'
                         type='password'
                         name='password'
                         error={errors.password?.message}
@@ -104,8 +106,8 @@ export function Register(){
 
                 </form>
 
-                <Link to="/">
-                    Já possui um cadastro? Fazer Login!
+                <Link to="/" className={styles.pfazerLogin}>
+                    Já possui um cadastro? <span>Fazer Login!</span>
                 </Link>
             
             

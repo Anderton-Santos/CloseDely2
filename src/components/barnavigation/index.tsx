@@ -1,30 +1,21 @@
 
-//import { Todos } from '../../pages/todos'
-import styles from './barnavigation.module.css'
 
+import styles from "./barnavigation.module.css";
 
+interface BarNavigationProps {
+  filters: string[];
+  onFilterClick: (filter?: string) => void;
+}
 
-
-export function BarNvigation({filterItems, updateItems, setDely, Alltask}){
-
-
-    return(
-        <header className={styles.header}>
-            <section className={styles.main}>
-                {filterItems.map(val => (
-                    <button
-                    onClick={()=>updateItems(val)}>
-                        {val}
-                        
-                    </button>
-                ))}
-                <button onClick={()=>Alltask()}>
-                    ALL
-                </button>
-                
-
-
-            </section>
-        </header>
-    )
+export function BarNvigation({ filters, onFilterClick }: BarNavigationProps) {
+  return (
+    <header className={styles.header}>
+      <section className={styles.main}>
+        {filters.map((val) => (
+          <button onClick={() => onFilterClick(val)}>{val}</button>
+        ))}
+        <button onClick={() => onFilterClick()}>ALL</button>
+      </section>
+    </header>
+  );
 }
