@@ -1,5 +1,4 @@
 import { FaWhatsapp } from "react-icons/fa";
-//import { MdDeliveryDining } from "react-icons/md";
 import { MdDeliveryDining } from "react-icons/md";
 import { HiArrowSmallRight } from "react-icons/hi2";
 
@@ -7,17 +6,32 @@ import { Link } from 'react-router-dom'
 
 
 import styles from './home.module.css'
+// import back from '../../components/background/back.png'
 
 export function Home() {
     return (
+        
         <div className={styles.contain}>
-            {/* <div className={styles.header}>
-                <h1>Bem vinda XXXXXX XXXXX,</h1>
-                <h3>Preparada para mais um dia?=)</h3>
+
+            {/* <div className={styles.logo}>
+
+                <h1 className=' p-1 text-vlck font-bold text-4xl'>Close
+                <span className='bg-gradient-to-r from-yellow-500 to-orange-400 bg-clip-text text-transparent'>Dely</span>
+                </h1 >
+                
+
             </div> */}
+            
+
+
+            
 
 
             <section className={styles.main}>
+{/* 
+                <div className={styles.logo}>
+                    <img src={back} alt="" />
+                </div> */}
 
 
 

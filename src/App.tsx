@@ -8,6 +8,9 @@ import { App } from "./pages/app"
 import { Register } from "./pages/register"
 import { Todos} from './pages/todos'
 
+import {InputCliente} from './pages/clientes/inputCliente'
+import {CadastroCliente} from './pages/clientes/cadastrocliente'
+
 import { Private } from "./routes/private"
 
 const router = createBrowserRouter([
@@ -40,6 +43,14 @@ const router = createBrowserRouter([
   {
     path: '/todos',
     element: <Private><Todos/></Private>
+  },
+  {
+    path: '/incliente',
+    element:<InputCliente/>
+  },
+  {
+    path: '/caCliente',
+    element:<CadastroCliente/>
   }
 ])
 

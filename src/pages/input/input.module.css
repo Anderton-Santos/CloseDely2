@@ -5,7 +5,7 @@
 }
 
 .divForm{
-    height: 90vh;
+    height: 100vh;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -27,12 +27,21 @@
 
 
 .label{
-    font-size: 18px;
-    padding: 10px;
+    font-size: 16px;
+    padding: 8px;
     display: flex;
     flex-direction: column;
 
 }
+
+.labelSelect{
+    display: flex;
+    
+    padding: 4px;
+    text-align: center;
+
+}
+
 
 .button{
     font-size: 18px;

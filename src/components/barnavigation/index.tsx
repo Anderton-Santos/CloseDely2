@@ -14,7 +14,7 @@ export function BarNvigation({ filters, onFilterClick }: BarNavigationProps) {
         {filters.map((val) => (
           <button onClick={() => onFilterClick(val)}>{val}</button>
         ))}
-        <button onClick={() => onFilterClick()}>ALL</button>
+        <button onClick={() => onFilterClick()}>Todos</button>
       </section>
     </header>
   );
